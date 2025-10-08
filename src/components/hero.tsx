@@ -1,17 +1,21 @@
+import { useRef } from "react";
+import { useMediaQuery } from "react-responsive";
 import { useGSAP } from "@gsap/react";
-import { SplitText } from "gsap/all";
 import { gsap } from "gsap";
-import React from "react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SplitText } from "gsap/all";
+
+gsap.registerPlugin(ScrollTrigger, SplitText);
 
 const Hero = () => {
+  const videoRef = useRef();
+  const isMobile = useMediaQuery({ maxWidth: 767 });
+
   useGSAP(() => {
-    const heroSplit = new SplitText(".title", { type: "chars, words," });
-    const paragraphSplit = new SplitText(".subtitle", {
-      type: "lines",
-    });
-    const titleSplit = new SplitText(".subtitles", {
-      type: "lines",
-    });
+    // --- SplitText animations ---
+    const heroSplit = new SplitText(".title", { type: "chars, words" });
+    const paragraphSplit = new SplitText(".subtitle", { type: "lines" });
+    const titleSplit = new SplitText(".subtitles", { type: "lines" });
 
     heroSplit.chars.forEach((char) => char.classList.add("text-gradient"));
 
@@ -22,6 +26,7 @@ const Hero = () => {
       ease: "expo.out",
       stagger: 0.07,
     });
+
     gsap.from(paragraphSplit.lines, {
       opacity: 0,
       yPercent: 100,
@@ -30,6 +35,7 @@ const Hero = () => {
       stagger: 0.05,
       delay: 1,
     });
+
     gsap.from(titleSplit.lines, {
       opacity: 0,
       yPercent: 100,
@@ -39,6 +45,7 @@ const Hero = () => {
       delay: 1,
     });
 
+    // --- Leaf animations ---
     gsap
       .timeline({
         scrollTrigger: {
@@ -50,6 +57,24 @@ const Hero = () => {
       })
       .to(".right-leaf", { y: 200 }, 0)
       .to(".left-leaf", { y: -200 }, 0);
+
+    // --- Video scroll animation ---
+    const startValue = isMobile ? "top 50%" : "center 60%";
+    const endValue = isMobile ? "120% top" : "bottom top";
+
+    if (videoRef.current) {
+      gsap.to(videoRef.current, {
+        currentTime: videoRef.current.duration || 5, // fallback duration
+        ease: "none",
+        scrollTrigger: {
+          trigger: videoRef.current,
+          start: startValue,
+          end: endValue,
+          scrub: true,
+          pin: true,
+        },
+      });
+    }
   }, []);
 
   return (
@@ -69,34 +94,39 @@ const Hero = () => {
 
         <div className="body">
           <div className="content">
-            <div className="space-y-5  hidden md:block">
-              <p className="mb-4">Cool . Crisp . Classic </p>
-              <p
-                className="subtitle
-               "
-              >
+            <div className="space-y-5 hidden md:block">
+              <p className="mb-4">Cool . Crisp . Classic</p>
+              <p className="subtitle">
                 Embrace the Vibe
                 <br />
-                Sip the Spirit .
-                <br />
+                Sip the Spirit .<br />
               </p>
             </div>
 
             <div className="view-cocktails hidden md:block">
-              <p className="subtitle ">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit
-                quae nam autem sequi quisquam possimus mollitia ea animi
-                explicabo recusandae repudiandae eius, culpa error soluta id?
-                Laudantium sequi totam laborum?
+              <p className="subtitle">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse
+                architecto officia nesciunt doloribus soluta. Temporibus eaque
+                itaque aliquam qui ut odit quos in facilis iste reiciendis
+                voluptates, unde molestiae adipisci!
               </p>
-              <a href="#cocktails" className="  inline-block btn">
-                {" "}
+              <a href="#cocktails" className="inline-block btn">
                 view Cocktails
               </a>
             </div>
           </div>
         </div>
       </section>
+
+      <div className="video absolute inset-0">
+        <video
+          ref={videoRef}
+          src="/videos/input.mp4"
+          muted
+          playsInline
+          preload="auto"
+        />
+      </div>
     </>
   );
 };
