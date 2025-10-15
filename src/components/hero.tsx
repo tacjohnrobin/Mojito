@@ -8,7 +8,7 @@ import { SplitText } from "gsap/all";
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
 const Hero = () => {
-  const videoRef = useRef();
+  const videoRef = useRef<HTMLVideoElement>(null);
   const isMobile = useMediaQuery({ maxWidth: 767 });
 
   useGSAP(() => {
@@ -60,7 +60,7 @@ const Hero = () => {
 
     // --- Video scroll animation ---
     const startValue = isMobile ? "top 50%" : "center 60%";
-    const endValue = isMobile ? "120% top" : "bottom top";
+    const endValue = isMobile ? "100% top" : "bottom top";
 
     if (videoRef.current) {
       gsap.to(videoRef.current, {
